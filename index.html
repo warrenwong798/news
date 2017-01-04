@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<head>
+  <link href="bootstrap.min.css" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+  <script src="jquery-3.1.1.min.js"></script>
+  <!-- This page calls the loadNewsList function when document ready and load all news from db
+  Also, it links to login page, provides logout function
+  and it allows search news by inputting string
+  ajax will be sent to server for different operations-->
+</head>
+
+<body>
+  <div class="container">
+    <div class="col-xs-12" id = "header">
+      <input type="text" class="col-xs-5" id="searchBox" value="" />
+      <button type="submit" class="col-xs-5" onclick="loadNewsList(1)">Search news headlines</button>
+      <a id="loginButton" class="col-xs-2" href="login.php?newsID=0">Login</a>
+      <a id="logoutButton" class="col-xs-2" href="#" onclick="logout()">Logout</a>
+    </div>
+    <div class="col-xs-12" id="news">
+    </div>
+    <div class="col-xs-8 col-xs-offset-4" id="pageindex">
+    </div>
+  </div>
+  <script type="text/javascript">
+
+  function concatArrayString(arrayOfString){
+    var simplifiedContent = "";
+    $.each(arrayOfString, function(k, word){
+      simplifiedContent = simplifiedContent + word + " ";
+    });
+    return simplifiedContent;
+  }
+
+  function loadNewsList(pageindex){
+
+    var search = " ";
+
+    if ($("#searchBox").val() != ""){
+      search = $("#searchBox").val();
+    }
+
+    $.ajax({
+
+      type: "get",
+      dataType: "json",
+      url: "handleListDisplay.php?pageindex=" + pageindex + "&searchString=" + search,
+      success: function (responseText){
+
+        if (responseText.loginStatus == 1){
+          $("#loginButton").hide();
+          $("#logoutButton").show();
+        }
+        else{
+          $("#loginButton").show();
+          $("#logoutButton").hide();
+        }
+        responseText.news.sort(function(x,y){
+          var xDate = new Date(x.time);
+          var yDate = new Date(y.time);
+          if (xDate > yDate){
+            return -1;
+          }
+          if (xDate < yDate){
+            return 1;
+          }
+          return 0;
+        });
+
+        var totalNumOfPage = Math.trunc(responseText.totalNo / 5);
+        if ((responseText.totalNo % 5) != 0){
+          totalNumOfPage = totalNumOfPage + 1;
+        }
+
+        if (responseText.totalNo == 0){
+          $("#news").html("");
+        }
+        else{
+          $.each(responseText.news, function(i, newsItem){
+
+            if (((i >= ((pageindex - 1)*5)) && (i < (pageindex * 5)))){
+              if ((i+1-(pageindex-1)*5) > $(".newsItem").length){
+                var simplifiedContent = concatArrayString(newsItem.content);
+                // console.log(simplifiedContent);
+                // var simplifiedContent = "";
+                // $.each(responseText.content, function(k, word){
+                //   simplifiedContent = simplifiedContent + word;
+                // });
+
+
+                $("#news").append("<div class='newsItem'><h3><a href='displayNewsEntry.php?newsID=" + newsItem.newsID + "'>" + newsItem.headline + "</a></h3>" + newsItem.time + "<br/><h4>" + simplifiedContent + "</h4></div>");
+              }
+              else{
+                $.each($(".newsItem"), function(j, thisNews){
+                  if ((i-(pageindex-1)*5) == j){
+                    var simplifiedContent = concatArrayString(newsItem.content);
+                    // var simplifiedContent = "";
+                    // $.each(responseText.content, function(k, word){
+                    //   simplifiedContent = simplifiedContent + word;
+                    // });
+
+                    $(this).html("<h3><a href='displayNewsEntry.php?newsID=" + newsItem.newsID + "'>" + newsItem.headline + "</a></h3>" + newsItem.time + "<br/><h4>" + simplifiedContent + "</h4>");
+                  }
+                  if (j >= responseText.news.length){
+                    $(this).html("");
+
+                  }
+                });
+              }
+            }
+          });
+      
+          if ((pageindex == totalNumOfPage) && (totalNumOfPage*5 > responseText.totalNo)){
+
+            var k = responseText.totalNo - (totalNumOfPage-1)*5;
+            $.each($(".newsItem"), function(l, thisItem){
+              if (l >= k){
+                $(this).html("");
+              }
+            });
+
+          }
+
+        }
+
+
+
+
+        var pageId = "";
+        for (var i = 1; i <= totalNumOfPage; i++){
+          var thisClass = "pageId";
+          if (i == pageindex){
+            thisClass = "thisPageId";
+          }
+          pageId = pageId + "<a href='#' class='col-xs-1 " + thisClass + "'onclick='loadNewsList(" + i + ")'>" + i + "</div>";
+        }
+        $("#pageindex").html(pageId);
+      }
+    });
+  }
+
+  $(document).ready(loadNewsList(1));
+
+  function logout(){
+    $.ajax({
+      url: 'handleLogout.php',
+      type: 'get',
+      dataType: 'text',
+      success: function(responseText){
+        if (responseText == "logout success"){
+          $("#loginButton").show();
+          $("#logoutButton").hide();
+        }
+        else{
+          alert(responseText);
+        }
+      }
+    });
+  }
+
+  </script>
+</body>

@@ -1,0 +1,111 @@
+body {
+
+}
+
+a{
+  color: #42aecb;
+}
+
+
+a:hover{
+  color: #FF0000;
+}
+
+a:active{
+  color: #575757;
+}
+/*
+button {
+  border-radius: 5%;
+}*/
+
+#header{
+  margin-top: 5px;
+}
+
+.text-center{
+  text-align: center;
+}
+
+.text-left{
+  text-align: left;
+}
+
+.newsContent{
+  margin-top: 5%;
+  padding: 50px;
+  font-size: 14px;
+  min-height: 20%;
+}
+
+#pageindex{
+  text-align: center;
+}
+
+.pageId{
+  color: #42aecb;
+}
+
+.pageId:hover{
+  color: #FF0000;
+}
+
+.thisPageId{
+  color: #000000;
+}
+
+.comment{
+  padding: 20px;
+  margin: 5px;
+  margin-top: 10px;
+  background-color: #f8f8f8;
+}
+
+.arrow{
+  float: left;
+  padding: 5px;
+  padding-left: 0px;
+  margin-top: 5px;
+  margin-left: 5px;
+  color: #575757;
+}
+
+.arrow:hover{
+  color: #42aecb;
+}
+
+#commentBox{
+  width: 100%;
+}
+
+#commentArea{
+  padding:10px;
+  margin-bottom: 10px;
+}
+
+#userName{
+  width: auto;
+
+}
+
+#password{
+  width: auto;
+}
+
+.input-field{
+  /*margin-top: 10px;*/
+  padding: 10px;
+  /*margin-left: 10px;*/
+}
+
+.input-field-name{
+  margin-top: 30px;
+}
+
+.input-field-pw{
+  margin-bottom: 20px;
+}
+
+#submit{
+  margin: 10px;
+}
